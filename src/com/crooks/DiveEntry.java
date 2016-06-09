@@ -7,12 +7,15 @@ public class DiveEntry {
     String location,buddy,comments;
     int maxDepth, duration;
 
-    public DiveEntry(String location, String buddy, String comments, int maxDepth, int duration) {
+    public DiveEntry(String location, String buddy, String comments, int maxDepth, int duration, int id) {
         this.location = location;
         this.buddy = buddy;
         this.comments = comments;
         this.maxDepth = maxDepth;
         this.duration = duration;
+    }
+
+    public DiveEntry() {
     }
 
     public String getLocation() {

@@ -1,5 +1,6 @@
 package com.crooks;
 
+import com.sun.org.apache.xpath.internal.operations.Div;
 import spark.ModelAndView;
 import spark.Session;
 import spark.Spark;
@@ -11,11 +12,11 @@ import java.util.HashMap;
 public class Main {
 
     static HashMap<String, User> userHash = new HashMap<>();
-    static ArrayList<DiveEntry> diveEntryArray = new ArrayList<>();
+
 
     public static void main(String[] args) {
-        addTestEntries();
         addTestUsers();
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","HUGE Sharks everywhere",80,15, 0));
 
         Spark.init();
         Spark.get(
@@ -24,9 +25,12 @@ public class Main {
                     HashMap m = new HashMap<>();
                     Session session = request.session();
                     String username = session.attribute("username");
+
                     if(username==null){
                         return new ModelAndView(m, "index.html");
                     }else {
+                        ArrayList<DiveEntry> diveEntryArray = userHash.get(username).diveLog;
+
                         m.put("name", username);
                         m.put("diveList", diveEntryArray);
                         return new ModelAndView(m, "dive.html");
@@ -35,6 +39,32 @@ public class Main {
                 },
                 new MustacheTemplateEngine()
         );
+        Spark.get(
+                "/addentry",
+                (request, response) -> {
+                    Session session = request.session();
+                    String username = session.attribute("username");
+                    HashMap m = new HashMap();
+                    if (username==null){
+                        response.redirect("/");
+
+                    } else {
+
+                        DiveEntry de = new DiveEntry();
+
+                        m.put("location", de.location);
+                        m.put("buddy", de.buddy);
+                        m.put("comments", de.comments);
+                        m.put("maxdepth", de.maxDepth);
+                        m.put("duration", de.duration);
+
+                    }
+                    return new ModelAndView(m, "addEntry.html");
+
+                },
+                new MustacheTemplateEngine()
+        );
+
         Spark.post(
                 "/login",
                 (request, response) -> {
@@ -61,6 +91,36 @@ public class Main {
                 }
 
         );
+        Spark.post(
+                "/addentry",
+                (request, response) -> {
+                    Session session =request.session();
+                    String username = session.attribute("username");
+
+                    String location = request.queryParams("location");
+                    String buddy = request.queryParams("buddy");
+                    String comments = request.queryParams("comments");
+                    int maxdepth = Integer.valueOf( request.queryParams("maxdepth"));
+                    int duration = Integer.valueOf(request.queryParams("duration"));
+
+                    DiveEntry de = new DiveEntry();
+
+                    de.setLocation(location);
+                    de.setBuddy(buddy);
+                    de.setComments(comments);
+                    de.setMaxDepth(maxdepth);
+                    de.setDuration(duration);
+
+                    User user = userHash.get(username);
+                    if (username==null) {
+                        response.redirect("/");
+                    }
+                    user.diveLog.add(de);
+
+                    response.redirect("/");
+                    return"";
+                }
+        );
 
         Spark.post(
                 "/logout",
@@ -73,18 +133,33 @@ public class Main {
                 }
         );
 
+        Spark.post(
+                "/delete",
+                (request, response) -> {
+                    Session session = request.session();
+                    String username = session.attribute("username");
+                    if(username==null){
+                        throw new Exception("Not Logged in");
+                    }
+                    int id = Integer.valueOf(request.queryParams("id"));
+                    User user = userHash.get(username);
+
+                    if(id<=0 || id-1>=user.diveLog.size()){
+                        throw new Exception("Invalid");
+                    }
+                response.redirect("/");
+                    return"";
+                }
+
+        );
+
     }
 
     static void addTestUsers(){
-        userHash.put("Alice", new User("Alice", "asd", diveEntryArray));
+        userHash.put("Alice", new User("Alice", "asd", new ArrayList<DiveEntry>()));
         userHash.put("Bob", new User("Bob", "123"));
         userHash.put("Charlie", new User("Charlie", "qwe"));
 
     }
 
-    static void addTestEntries(){
-        diveEntryArray.add(new DiveEntry("Bali", "Bob", "Saw a 12 foot Tiger Shark!!", 85, 12));
-        diveEntryArray.add(new DiveEntry("Hawaii", "James", "got my BC stuck on some coral, Whoops :/", 40, 60));
-        diveEntryArray.add(new DiveEntry("Jamaica", "Bob", "A damn Octopus stole my dive knife!", 35, 70));
-    }
 }

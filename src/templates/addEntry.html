@@ -2,9 +2,21 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>New Entry</title>
 </head>
 <body>
+<h1> Congrats on the Dive, Now throw it in the log!</h1>
+
+<form action="/addentry" method="post">
+    <input type="text" name="location" placeholder="Location"/><br>
+    <input type="text" name="buddy" placeholder="Dive buddy"/><br>
+    <input type="text" name="comments" placeholder="Comments about the Dive"/><br>
+    <input type="number" name="maxdepth" placeholder="Max Depth Achieved"/><br>
+    <input type="number" name="duration" placeholder="Dive Duration"/><br>
+    <button type="submit">Submit</button>
+</form>
+
+
 
 </body>
 </html>
