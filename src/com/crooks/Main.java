@@ -40,11 +40,19 @@ public class Main {
                 (request, response) -> {
                     String username =request.queryParams("username");
                     String password = request.queryParams("password");
+
+                    if(username==null ||password==null){
+                        Spark.halt("Name or Pass not sent through");
+                    }
+
                     User user = userHash.get(username);
                     if(user==null){
                         user = new User(username,password);
                         userHash.put(username,user);
+                    }else if (!password.equals(user.password)){
+                        Spark.halt("Wrong Password!");
                     }
+
                     Session session = request.session();
                     session.attribute("username", username);
 
@@ -65,10 +73,6 @@ public class Main {
                 }
         );
 
-
-
-
-
     }
 
     static void addTestUsers(){
@@ -80,7 +84,7 @@ public class Main {
 
     static void addTestEntries(){
         diveEntryArray.add(new DiveEntry("Bali", "Bob", "Saw a 12 foot Tiger Shark!!", 85, 12));
-        diveEntryArray.add(new DiveEntry("Bali", "James", "got my BC stuck on some coral, Whoops :/", 40, 60));
+        diveEntryArray.add(new DiveEntry("Hawaii", "James", "got my BC stuck on some coral, Whoops :/", 40, 60));
         diveEntryArray.add(new DiveEntry("Jamaica", "Bob", "A damn Octopus stole my dive knife!", 35, 70));
     }
 }
