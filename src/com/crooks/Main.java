@@ -9,14 +9,25 @@ import spark.template.mustache.MustacheTemplateEngine;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import static spark.Spark.staticFileLocation;
+
 public class Main {
 
     static HashMap<String, User> userHash = new HashMap<>();
 
 
     public static void main(String[] args) {
+
+        //adding some pre-seeded data for ease of testing
         addTestUsers();
         userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","HUGE Sharks everywhere",80,15, 0));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Hawaii","Charlie","nothing noteworthy besides, well, everything...",200,5, 1));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 2));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Hawaii","Charlie","The font-family property should hold several font names as a \"fallback\" system. If the browser does not support the first font, it tries the next font, and so on.\n" +
+                "\n" +
+                "Start with the font you want, and end with a generic family, to let the browser pick a similar font in the generic family, if no other fonts are available..",30,5, 3));
+
+        staticFileLocation("templates");
 
         Spark.init();
         Spark.get(
@@ -65,6 +76,7 @@ public class Main {
                 new MustacheTemplateEngine()
         );
 
+
         Spark.post(
                 "/login",
                 (request, response) -> {
@@ -97,28 +109,27 @@ public class Main {
                     Session session =request.session();
                     String username = session.attribute("username");
 
-                    String location = request.queryParams("location");
+                    User user = userHash.get(username);             //If not logged in, redirect user;
+                    if (username==null) {
+                        response.redirect("/");
+                    }
+
+                    String location = request.queryParams("location");          //Grab variable details from the user
                     String buddy = request.queryParams("buddy");
                     String comments = request.queryParams("comments");
                     int maxdepth = Integer.valueOf( request.queryParams("maxdepth"));
                     int duration = Integer.valueOf(request.queryParams("duration"));
-                    int id= 0;
+                    int id = 0;
 
-                    User user = userHash.get(username);
-                    if (username==null) {
-                        response.redirect("/");
-                    }
-                    DiveEntry de = new DiveEntry();
                     ArrayList<DiveEntry> emptyDiveLog = new ArrayList<>();
+
                     if (user.diveLog==null){
                         user.diveLog = emptyDiveLog;
+                        id = emptyDiveLog.size();
+                        System.out.println("temp");
+                    }else {
+                        id = userHash.get(username).diveLog.size();
                     }
-                    de.setLocation(location);
-                    de.setBuddy(buddy);
-                    de.setComments(comments);
-                    de.setMaxDepth(maxdepth);
-                    de.setDuration(duration);
-                    de.setId(id = userHash.get(username).diveLog.size());
 
                     userHash.get(username).diveLog.add(new DiveEntry(location,buddy,comments,maxdepth,duration,id));
 
@@ -127,16 +138,7 @@ public class Main {
                 }
         );
 
-        Spark.post(
-                "/logout",
-                (request, response) -> {
-                    Session session = request.session();
-                    session.invalidate();
 
-                    response.redirect("/");
-                    return "";
-                }
-        );
 
         Spark.post(
                 "/delete",
@@ -154,7 +156,7 @@ public class Main {
                     user.diveLog.remove(id);
 
                     int index = 0;
-                    if (user.diveLog.size() > 1) {              //after removing an entry, if the log isn't empty reset the id numbers.
+                    if (user.diveLog.size() > 1) {                      //after removing an entry, if the log isn't empty reset the id numbers.
                         for (DiveEntry de : user.diveLog) {
                             de.id = index;
                             index++;
@@ -166,6 +168,16 @@ public class Main {
 
         );
 
+        Spark.post(
+                "/logout",
+                (request, response) -> {
+                    Session session = request.session();
+                    session.invalidate();
+
+                    response.redirect("/");
+                    return "";
+                }
+        );
     }
 
     static void addTestUsers(){

@@ -1,0 +1,38 @@
+section {
+    font-family:"Comic Sans MS", cursive, sans-serif;
+    width: 80%;
+    height: 180px;
+    background: #B17541;
+    margin: auto;
+    padding: 20px;
+
+
+}
+div#one {
+    font-family:"Comic Sans MS", cursive, sans-serif;
+    width: 25%;
+    height: 180px;
+    background: teal;
+    float: left;
+    padding-left: 10px;
+    padding-top:10px;
+    min-width:150px;
+}
+div#two {
+    font-family:"Comic Sans MS", cursive, sans-serif;
+    margin-left: 25%;
+    height: 180px;
+    background: #37B3B4;
+    padding-left: 10px;
+    padding-top:10px;
+    min-width:200px;
+}
+ul{
+    list-style: none;
+}
+header{
+    font-family:"Comic Sans MS", cursive, sans-serif;
+    height:75px
+    padding-left: 10px;
+    font-size:20px;
+}
