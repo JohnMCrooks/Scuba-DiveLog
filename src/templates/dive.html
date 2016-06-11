@@ -11,7 +11,18 @@ Hey, {{name}}! This page will eventually Display your Dive Log Entries....
 <ol>
     {{#diveList}}
         <li>Location: {{location}} <br>Dive Buddy: {{buddy}} <br>Max Depth: {{maxDepth}}ft <br>Duration: {{duration}} minutes <br>Comments: {{comments}}<br>
-            <h6><button type="submit"> Delete </button>  <a href="/editentry">Edit Entry</a></h6><br></li>
+
+            <h6>
+                <form action="/delete" method="post">
+                    <input type="hidden" name="id" value="{{id}}"/>
+                    <button type="submit"> Delete </button>
+                </form>
+                <form>
+                <a href="/editentry">Edit Entry</a>
+                </form>
+            </h6><br>
+
+        </li>
     {{/diveList}}
 </ol>
 
@@ -23,6 +34,7 @@ Hey, {{name}}! This page will eventually Display your Dive Log Entries....
 
 
 <form action="/logout" method="post">
+
     <button type="submit">
         Logout
     </button>

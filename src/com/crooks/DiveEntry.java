@@ -5,7 +5,7 @@ package com.crooks;
  */
 public class DiveEntry {
     String location,buddy,comments;
-    int maxDepth, duration;
+    int maxDepth, duration,id;
 
     public DiveEntry(String location, String buddy, String comments, int maxDepth, int duration, int id) {
         this.location = location;
@@ -13,49 +13,33 @@ public class DiveEntry {
         this.comments = comments;
         this.maxDepth = maxDepth;
         this.duration = duration;
+        this.id= id;
     }
 
     public DiveEntry() {
-    }
-
-    public String getLocation() {
-        return location;
     }
 
     public void setLocation(String location) {
         this.location = location;
     }
 
-    public String getBuddy() {
-        return buddy;
-    }
-
     public void setBuddy(String buddy) {
         this.buddy = buddy;
-    }
-
-    public String getComments() {
-        return comments;
     }
 
     public void setComments(String comments) {
         this.comments = comments;
     }
 
-    public int getMaxDepth() {
-        return maxDepth;
-    }
-
     public void setMaxDepth(int maxDepth) {
         this.maxDepth = maxDepth;
     }
 
-    public int getDuration() {
-        return duration;
-    }
-
     public void setDuration(int duration) {
         this.duration = duration;
+    }
+    public void setId(int id){
+        this.id=id;
     }
 
     @Override

@@ -102,20 +102,25 @@ public class Main {
                     String comments = request.queryParams("comments");
                     int maxdepth = Integer.valueOf( request.queryParams("maxdepth"));
                     int duration = Integer.valueOf(request.queryParams("duration"));
-
-                    DiveEntry de = new DiveEntry();
-
-                    de.setLocation(location);
-                    de.setBuddy(buddy);
-                    de.setComments(comments);
-                    de.setMaxDepth(maxdepth);
-                    de.setDuration(duration);
+                    int id= 0;
 
                     User user = userHash.get(username);
                     if (username==null) {
                         response.redirect("/");
                     }
-                    user.diveLog.add(de);
+                    DiveEntry de = new DiveEntry();
+                    ArrayList<DiveEntry> emptyDiveLog = new ArrayList<>();
+                    if (user.diveLog==null){
+                        user.diveLog = emptyDiveLog;
+                    }
+                    de.setLocation(location);
+                    de.setBuddy(buddy);
+                    de.setComments(comments);
+                    de.setMaxDepth(maxdepth);
+                    de.setDuration(duration);
+                    de.setId(id = userHash.get(username).diveLog.size());
+
+                    userHash.get(username).diveLog.add(new DiveEntry(location,buddy,comments,maxdepth,duration,id));
 
                     response.redirect("/");
                     return"";
@@ -138,16 +143,24 @@ public class Main {
                 (request, response) -> {
                     Session session = request.session();
                     String username = session.attribute("username");
-                    if(username==null){
-                        throw new Exception("Not Logged in");
+                    if (username == null) {
+                        Spark.halt("Sorry you can't delete this entry if you are not logged in.");
                     }
-                    int id = Integer.valueOf(request.queryParams("id"));
                     User user = userHash.get(username);
-
-                    if(id<=0 || id-1>=user.diveLog.size()){
-                        throw new Exception("Invalid");
+                    int id = Integer.valueOf(request.queryParams("id"));
+                    if (id < 0 || id >= user.diveLog.size()) {           //after retrieving ID number check to make sure it's valid - Which it should be since the user can't alter it
+                        Spark.halt("Invalid Entry ID ##");
                     }
-                response.redirect("/");
+                    user.diveLog.remove(id);
+
+                    int index = 0;
+                    if (user.diveLog.size() > 1) {              //after removing an entry, if the log isn't empty reset the id numbers.
+                        for (DiveEntry de : user.diveLog) {
+                            de.id = index;
+                            index++;
+                        }
+                    }
+                    response.redirect("/");
                     return"";
                 }
 
