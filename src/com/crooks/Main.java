@@ -76,6 +76,30 @@ public class Main {
                 new MustacheTemplateEngine()
         );
 
+        Spark.get(
+                "/editEntry",
+                (request, response) -> {
+                    Session session =request.session();
+                    String username = session.attribute("username");
+
+                    HashMap m = new HashMap();
+
+                    if (username==null) {
+                        response.redirect("/");
+                    } else {
+                        DiveEntry de = new DiveEntry();
+
+                        m.put("location", de.location);
+                        m.put("buddy", de.buddy);
+                        m.put("comments", de.comments);
+                        m.put("maxdepth", de.maxDepth);
+                        m.put("duration", de.duration);
+                        m.put("id", de.id);
+                    }
+                    return new ModelAndView(m, "editEntry.html");
+
+                }, new MustacheTemplateEngine()
+        );
 
         Spark.post(
                 "/login",
@@ -140,6 +164,22 @@ public class Main {
 
 
 
+//TODO finish the post below
+//        Spark.post(
+//                "/editentry",
+//                (request, response) -> {
+//                    Session session =request.session();
+//                    String username = session.attribute("username");
+//
+//                    User user = userHash.get(username);             //If not logged in, redirect user;
+//                    if (username==null) {
+//                        response.redirect("/");
+//                    }
+//
+//
+//                }
+//        );
+
         Spark.post(
                 "/delete",
                 (request, response) -> {
@@ -156,7 +196,7 @@ public class Main {
                     user.diveLog.remove(id);
 
                     int index = 0;
-                    if (user.diveLog.size() > 1) {                      //after removing an entry, if the log isn't empty reset the id numbers.
+                    if (user.diveLog.size() >= 1) {                      //after removing an entry, if the log isn't empty reset the id numbers.
                         for (DiveEntry de : user.diveLog) {
                             de.id = index;
                             index++;
@@ -181,7 +221,7 @@ public class Main {
     }
 
     static void addTestUsers(){
-        userHash.put("Alice", new User("Alice", "asd", new ArrayList<DiveEntry>()));
+        userHash.put("Alice", new User("Alice", "a", new ArrayList<DiveEntry>()));
         userHash.put("Bob", new User("Bob", "123"));
         userHash.put("Charlie", new User("Charlie", "qwe"));
 

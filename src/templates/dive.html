@@ -22,7 +22,10 @@ Hey, {{name}}! This page will eventually Display your Dive Log Entries....
                             <button type="submit"> Delete </button>
                         </form>
                         <form>
-                            <a href="/editentry">Edit Entry</a>
+                           <form action="/editEntry" method="post">
+                               <input type="hidden" name="id" value="{{id}}">
+                               <button type="submit">Edit Entry</button>
+                           </form>
                         </form>
                     </h6>
                 </div>
