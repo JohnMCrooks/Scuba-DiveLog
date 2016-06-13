@@ -2,9 +2,24 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Edit Entry</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
 </head>
-<body>
+<body bgcolor=#006F71>
+<h3> I knew something didn't look right, now's your chance to fix it.</h3>
+<div style='width:40%';>
+<form action="/editEntry" method="post">
+    Location: <input type="text" name="location" placeholder="Location" value="{{location}}" autofocus style='width:50%'/><br><br>
+    Dive Buddy: <input type="text" name="buddy" placeholder="Dive buddy" value="{{buddy}}"style='width:50%'/><br><br>
+    Max Depth: <input type="number" name="maxdepth" placeholder="Max Depth Achieved"value="{{maxdepth}}"style='width:50%'/><br><br>
+    Duration: <input type="number" name="duration" placeholder="Dive Duration" value="{{duration}}" style='width:50%'/><br><br>
+    Comments: <input type="text" name="comments" placeholder="Comments about the Dive"value="{{comments}}" maxlength="400" style='width:100%' /><br><br>
+    <input type="hidden" name="id" value="{{id}}" />
+    <button type="submit">Submit</button>
+</form>
+</div>
+
+
 
 </body>
 </html>

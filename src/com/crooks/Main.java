@@ -26,6 +26,10 @@ public class Main {
         userHash.get("Alice").diveLog.add(new DiveEntry("Hawaii","Charlie","The font-family property should hold several font names as a \"fallback\" system. If the browser does not support the first font, it tries the next font, and so on.\n" +
                 "\n" +
                 "Start with the font you want, and end with a generic family, to let the browser pick a similar font in the generic family, if no other fonts are available..",30,5, 3));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 2));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 2));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 2));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 2));
 
         staticFileLocation("templates");
 
@@ -40,10 +44,23 @@ public class Main {
                     if(username==null){
                         return new ModelAndView(m, "index.html");
                     }else {
-                        ArrayList<DiveEntry> diveEntryArray = userHash.get(username).diveLog;
+                        int offset = 0;
+                        String offStr = request.queryParams("offset");              //Add Offset parameters for pagination
+
+                        if (offStr!=null){
+                            offset = Integer.valueOf(offStr);
+                        }
+                        int newOffset = offset+4;
+
+                        ArrayList<DiveEntry> diveSubList = new ArrayList<>(userHash.get(username).diveLog.subList(offset,newOffset));  //using a sublist to create a predefined number of entries on each page.
 
                         m.put("name", username);
-                        m.put("diveList", diveEntryArray);
+                        m.put("diveList", diveSubList);
+                        m.put("offsetup", offset+4);
+                        m.put("offsetdown", offset-4);
+                        m.put("shownext", offset+4 < userHash.get(username).diveLog.size());
+                        m.put("showprev", offset>0);
+
                         return new ModelAndView(m, "dive.html");
                     }
 
