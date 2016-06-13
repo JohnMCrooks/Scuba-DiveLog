@@ -5,51 +5,51 @@
     <title>{{name}}'s Dive Log</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
-<body>
-<header>
-Hey, {{name}}! This page will eventually Display your Dive Log Entries....
+<body bgcolor=#006F71>
+<header align="center">
+Welcome Back {{name}}!
 </header>
+<div align="center" id="container">
+    <form action="/addentry" method="get" id="button1">
+        <button type="submit">
+            Add New Dive
+        </button>
+    </form>
 
+
+    <form action="/logout" method="post" id="button2">
+
+        <button type="submit">
+            Logout
+        </button>
+    </form>
+</div>
 <ul>
     {{#diveList}}
         <li>
-            <section>
+            <section style='border-radius: 15px;'>
                 <div>
-                <div id="one">Location: {{location}} <br>Dive Buddy: {{buddy}} <br>Max Depth: {{maxDepth}}ft <br>Duration: {{duration}} minutes
-                    <h6>
-                        <form action="/delete" method="post">
-                            <input type="hidden" name="id" value="{{id}}"/>
-                            <button type="submit"> Delete </button>
-                        </form>
-                        <form>
-                           <form action="/editEntry" method="post">
-                               <input type="hidden" name="id" value="{{id}}">
-                               <button type="submit">Edit Entry</button>
-                           </form>
-                        </form>
-                    </h6>
-                </div>
-                <div id="two"> Comments: {{comments}}
-                </div>
+                    <div id="one">Location: {{location}} <br>Dive Buddy: {{buddy}} <br>Max Depth: {{maxDepth}}ft <br>Duration: {{duration}} minutes
+                        <h6>
+                            <form action="/delete" method="post">
+                                <input type="hidden" name="id" value="{{id}}"/>
+                                <button type="submit"> Delete </button>
+                            </form>
+                               <form action="/editEntry" method="get">
+                                   <input type="hidden" name="id" value="{{id}}">
+                                   <button type="submit">Edit Entry</button>
+                               </form>
+                        </h6>
+                    </div>
+                    <div id="two">
+                        Comments: {{comments}}
+                    </div>
                 </div>
             </section>
         </li>
     {{/diveList}}
 </ul>
 
-<form action="/addentry" method="get">
-    <button type="submit">
-        Add New Dive
-    </button>
-</form>
-
-
-<form action="/logout" method="post">
-
-    <button type="submit">
-        Logout
-    </button>
-</form>
 
 </body>
 </html>

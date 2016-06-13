@@ -81,13 +81,14 @@ public class Main {
                 (request, response) -> {
                     Session session =request.session();
                     String username = session.attribute("username");
+                    int id= Integer.valueOf(request.queryParams("id"));
 
                     HashMap m = new HashMap();
 
                     if (username==null) {
                         response.redirect("/");
                     } else {
-                        DiveEntry de = new DiveEntry();
+                        DiveEntry de = userHash.get(username).diveLog.get(id);
 
                         m.put("location", de.location);
                         m.put("buddy", de.buddy);
@@ -164,21 +165,35 @@ public class Main {
 
 
 
-//TODO finish the post below
-//        Spark.post(
-//                "/editentry",
-//                (request, response) -> {
-//                    Session session =request.session();
-//                    String username = session.attribute("username");
-//
-//                    User user = userHash.get(username);             //If not logged in, redirect user;
-//                    if (username==null) {
-//                        response.redirect("/");
-//                    }
-//
-//
-//                }
-//        );
+//TODO finish the post route below
+        Spark.post(
+                "/editEntry",
+                (request, response) -> {
+                    Session session =request.session();
+                    String username = session.attribute("username");
+
+                    User user = userHash.get(username);             //If not logged in, redirect user;
+                    if (username==null) {
+                        response.redirect("/");
+                    }
+
+                    String location = request.queryParams("location");          //Grab variable details from the user
+                    String buddy = request.queryParams("buddy");
+                    String comments = request.queryParams("comments");
+                    int maxdepth = Integer.valueOf( request.queryParams("maxdepth"));
+                    int duration = Integer.valueOf(request.queryParams("duration"));
+                    int id = Integer.valueOf(request.queryParams("id"));
+
+                    DiveEntry updatedEntry = new DiveEntry(location,buddy,comments,maxdepth,duration,id);
+
+                    userHash.get(username).diveLog.set(id, updatedEntry);
+
+                    response.redirect("/");
+                    return"";
+
+
+                }
+        );
 
         Spark.post(
                 "/delete",
