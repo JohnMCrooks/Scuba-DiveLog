@@ -8,7 +8,7 @@ import java.util.ArrayList;
 public class User {
     String userName;
     String password;
-    ArrayList<DiveEntry> diveLog;
+    ArrayList<DiveEntry> diveLog = new ArrayList<>();
 
     public User(String userName, String password) {
         this.userName = userName;
