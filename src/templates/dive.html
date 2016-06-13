@@ -10,8 +10,8 @@
 Welcome Back {{name}}!
 </header>
 <div align="center" id="container">
-    {{#shownext}} <a href="/?offset={{offsetup}}">Next</a><br>{{/shownext}}
-
+    {{#showprev}} <a href="/?offset={{offsetdown}}">Previous</a>{{/showprev}}
+    {{#shownext}} <a href="/?offset={{offsetup}}">Next</a>{{/shownext}}<br>
     <form action="/addentry" method="get" id="button1">
         <button type="submit">
             Add New Dive
@@ -26,7 +26,7 @@ Welcome Back {{name}}!
         </button>
     </form>
 
-    {{#showprev}} <a href="/?offset={{offsetdown}}">Previous</a><br>{{/showprev}}
+
 </div>
 <ul>
     {{#diveList}}

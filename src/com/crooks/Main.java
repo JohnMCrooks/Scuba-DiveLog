@@ -26,10 +26,14 @@ public class Main {
         userHash.get("Alice").diveLog.add(new DiveEntry("Hawaii","Charlie","The font-family property should hold several font names as a \"fallback\" system. If the browser does not support the first font, it tries the next font, and so on.\n" +
                 "\n" +
                 "Start with the font you want, and end with a generic family, to let the browser pick a similar font in the generic family, if no other fonts are available..",30,5, 3));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 2));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 2));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 2));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 2));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 4));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 5));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","TESTING PURPOSES. TESTING PURPOSES. TESTING PURPOSES. TESTING PURPOSES. TESTING PURPOSES. TESTING PURPOSES." ,45,123, 6));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 7));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 8));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","for the sake of page seperation and readability I'll make this one a little different" ,88,23, 9));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 10));
+        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 11));
 
         staticFileLocation("templates");
 
