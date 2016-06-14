@@ -78,6 +78,7 @@ public class MainTest {
         Main.deleteEntry(conn, 1);
         DiveEntry msg = Main.selectEntry(conn, 1);
         conn.close();
+
         assertTrue(msg==null);
     }
 
@@ -85,8 +86,9 @@ public class MainTest {
     public void testEditEntry() throws SQLException{
         Connection conn = startConnection();
         Main.insertUser(conn, "Alice", "");
+        User alice = Main.selectUser(conn, "Alice");
         Main.insertEntry(conn,"fiji", "eddie","the sharks were yuuuuuge",50,41,1);
-        Main.editEntry(conn, "mars", "me", "blah", 99, 99,1);
+        Main.editEntry(conn, "mars", "me", "blah", 99, 99,1,alice.id);
         DiveEntry de = Main.selectEntry(conn,1);
 
         conn.close();

@@ -18,8 +18,6 @@ import static spark.Spark.staticFileLocation;
 
 public class Main {
 
-    static HashMap<String, User> userHash = new HashMap<>();
-
     public static void createTables(Connection conn) throws SQLException{
         Statement stmt = conn.createStatement();
         stmt.execute("CREATE TABLE IF NOT EXISTS users (id IDENTITY, name VARCHAR, password VARCHAR)");
@@ -99,15 +97,16 @@ public class Main {
         stmt.execute();
     }
 
-    public static void editEntry(Connection conn,String location, String buddy, String comments, int maxDepth, int duration, int id ) throws SQLException {
-//        DiveEntry de1 = new DiveEntry();
-        PreparedStatement stmt = conn.prepareStatement("UPDATE diveEntries SET location = ?, buddy=?, comments=?, maxdepth=?,duration=? WHERE id=?");
+    public static void editEntry(Connection conn,String location, String buddy, String comments, int maxDepth, int duration, int id, int userID ) throws SQLException {
+
+        PreparedStatement stmt = conn.prepareStatement("UPDATE diveEntries SET location = ?, buddy=?, comments=?, maxdepth=?,duration=?, user_id=? WHERE id=?");
         stmt.setString(1, location);
         stmt.setString(2, buddy);
         stmt.setString(3, comments);
         stmt.setInt(4,maxDepth);
         stmt.setInt(5, duration);
-        stmt.setInt(6, id);
+        stmt.setInt(7, id);
+        stmt.setInt(6, userID);
         stmt.execute();
     }
 
@@ -125,33 +124,15 @@ public class Main {
                     HashMap m = new HashMap<>();
                     Session session = request.session();
                     String username = session.attribute("username");
-
+                    User user =  selectUser(conn, username);
                     if(username==null){
                         return new ModelAndView(m, "index.html");
                     }else {
-                        int offset = 0;
-                        String offStr = request.queryParams("offset");              //Add Offset parameters for pagination
 
-                        if (offStr!=null){
-                            offset = Integer.valueOf(offStr);
-                        }
-                        int newOffset = offset+4;
-
-                        ListIterator<DiveEntry> iter = userHash.get(username).diveLog.listIterator(offset);  //Iterate through the list and display via offset values.
-                        ArrayList<DiveEntry> diveSubList = new ArrayList<DiveEntry>();
-                        while (iter.hasNext()) {
-                            if (iter.nextIndex() == newOffset) {
-                                break;
-                            }
-                            diveSubList.add(iter.next());
-                        }
+                        ArrayList<DiveEntry> diveSubList = selectEntries(conn, user.id);
 
                         m.put("name", username);
                         m.put("diveList", diveSubList);
-                        m.put("offsetup", offset+4);
-                        m.put("offsetdown", offset-4);
-                        m.put("shownext", offset+4 < userHash.get(username).diveLog.size());
-                        m.put("showprev", offset>0);
 
                         return new ModelAndView(m, "dive.html");
                     }
@@ -169,7 +150,6 @@ public class Main {
                         response.redirect("/");
 
                     } else {
-
                         DiveEntry de = new DiveEntry();
 
                         m.put("location", de.location);
@@ -190,21 +170,23 @@ public class Main {
                 (request, response) -> {
                     Session session =request.session();
                     String username = session.attribute("username");
-                    int id= Integer.valueOf(request.queryParams("id"));
+                    int id = Integer.valueOf(request.queryParams("id"));
+                    User user = selectUser(conn, username);
 
                     HashMap m = new HashMap();
 
                     if (username==null) {
                         response.redirect("/");
                     } else {
-                        DiveEntry de = userHash.get(username).diveLog.get(id);
+
+                        DiveEntry de = selectEntry(conn, user.id);
 
                         m.put("location", de.location);
                         m.put("buddy", de.buddy);
                         m.put("comments", de.comments);
                         m.put("maxdepth", de.maxDepth);
                         m.put("duration", de.duration);
-                        m.put("id", de.id);
+                        m.put("id", id);
                     }
                     return new ModelAndView(m, "editEntry.html");
 
@@ -221,10 +203,10 @@ public class Main {
                         Spark.halt("Name or Pass not sent through");
                     }
 
-                    User user = userHash.get(username);
+                    User user = selectUser(conn, username);
                     if(user==null){
-                        user = new User(username,password);
-                        userHash.put(username,user);
+                        insertUser(conn, username, password);
+
                     }else if (!password.equals(user.password)){
                         Spark.halt("Wrong Password!");
                     }
@@ -243,7 +225,7 @@ public class Main {
                     Session session =request.session();
                     String username = session.attribute("username");
 
-                    User user = userHash.get(username);             //If not logged in, redirect user;
+                    User user = selectUser(conn, username);             //If not logged in, redirect user;
                     if (username==null) {
                         response.redirect("/");
                     }
@@ -255,17 +237,7 @@ public class Main {
                     int duration = Integer.valueOf(request.queryParams("duration"));
                     int id = 0;
 
-                    ArrayList<DiveEntry> emptyDiveLog = new ArrayList<>();
-
-                    if (user.diveLog==null){
-                        user.diveLog = emptyDiveLog;
-                        id = emptyDiveLog.size();
-                        System.out.println("temp");
-                    }else {
-                        id = userHash.get(username).diveLog.size();
-                    }
-
-                    userHash.get(username).diveLog.add(new DiveEntry(location,buddy,comments,maxdepth,duration,id));
+                    insertEntry(conn, location, buddy, comments,maxdepth, duration, user.id);
 
                     response.redirect("/");
                     return"";
@@ -281,7 +253,7 @@ public class Main {
                     Session session =request.session();
                     String username = session.attribute("username");
 
-                    User user = userHash.get(username);             //If not logged in, redirect user;
+                    User user = selectUser(conn, username);             //If not logged in, redirect user;
                     if (username==null) {
                         response.redirect("/");
                     }
@@ -293,9 +265,7 @@ public class Main {
                     int duration = Integer.valueOf(request.queryParams("duration"));
                     int id = Integer.valueOf(request.queryParams("id"));
 
-                    DiveEntry updatedEntry = new DiveEntry(location,buddy,comments,maxdepth,duration,id);
-
-                    userHash.get(username).diveLog.set(id, updatedEntry);
+                    editEntry(conn,location,buddy,comments,maxdepth,duration, id, user.id);
 
                     response.redirect("/");
                     return"";
@@ -312,20 +282,10 @@ public class Main {
                     if (username == null) {
                         Spark.halt("Sorry you can't delete this entry if you are not logged in.");
                     }
-                    User user = userHash.get(username);
+                    User user = selectUser(conn,username);
                     int id = Integer.valueOf(request.queryParams("id"));
-                    if (id < 0 || id >= user.diveLog.size()) {           //after retrieving ID number check to make sure it's valid - Which it should be since the user can't alter it
-                        Spark.halt("Invalid Entry ID ##");
-                    }
-                    user.diveLog.remove(id);
+                     deleteEntry(conn, id);
 
-                    int index = 0;
-                    if (user.diveLog.size() >= 1) {                      //after removing an entry, if the log isn't empty reset the id numbers.
-                        for (DiveEntry de : user.diveLog) {
-                            de.id = index;
-                            index++;
-                        }
-                    }
                     response.redirect("/");
                     return"";
                 }
