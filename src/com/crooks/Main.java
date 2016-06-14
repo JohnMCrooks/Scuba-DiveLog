@@ -54,8 +54,6 @@ public class Main {
         stmt.setInt(5, duration);
         stmt.setInt(6, userID);
         stmt.execute();
-
-
     }
 
     public static DiveEntry selectEntry(Connection conn, int id) throws SQLException {
@@ -71,6 +69,46 @@ public class Main {
             return new DiveEntry(location,buddy,comments,maxDepth,duration,id);
         }
         return null;
+    }
+
+    public static ArrayList<DiveEntry> selectEntries(Connection conn, int userID) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM diveEntries INNER JOIN users ON diveEntries.user_id = users.id WHERE users.id=?");
+        stmt.setInt(1, userID);
+
+        ResultSet results = stmt.executeQuery();
+
+        ArrayList<DiveEntry> deList = new ArrayList<>();
+
+        while(results.next()){
+            String location = results.getString("diveEntries.location");
+            String buddy = results.getString("diveEntries.buddy");
+            String comments = results.getString("diveEntries.comments");
+            int maxDepth = results.getInt("diveEntries.maxdepth");
+            int duration = results.getInt("diveEntries.duration");
+            int id = results.getInt("diveEntries.id");
+
+            DiveEntry d1 = new DiveEntry(location,buddy,comments,maxDepth,duration,id);
+            deList.add(d1);
+        }
+        return deList;
+    }
+
+    public static void deleteEntry(Connection conn, int id) throws SQLException{
+        PreparedStatement stmt = conn.prepareStatement("DELETE FROM diveEntries WHERE id = ?");
+        stmt.setInt(1,id);
+        stmt.execute();
+    }
+
+    public static void editEntry(Connection conn,String location, String buddy, String comments, int maxDepth, int duration, int id ) throws SQLException {
+//        DiveEntry de1 = new DiveEntry();
+        PreparedStatement stmt = conn.prepareStatement("UPDATE diveEntries SET location = ?, buddy=?, comments=?, maxdepth=?,duration=? WHERE id=?");
+        stmt.setString(1, location);
+        stmt.setString(2, buddy);
+        stmt.setString(3, comments);
+        stmt.setInt(4,maxDepth);
+        stmt.setInt(5, duration);
+        stmt.setInt(6, id);
+        stmt.execute();
     }
 
     public static void main(String[] args) throws SQLException {
