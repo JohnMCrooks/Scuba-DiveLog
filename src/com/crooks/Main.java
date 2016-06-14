@@ -1,11 +1,14 @@
 package com.crooks;
 
 import com.sun.org.apache.xpath.internal.operations.Div;
+import org.h2.tools.CreateCluster;
+import org.h2.tools.Server;
 import spark.ModelAndView;
 import spark.Session;
 import spark.Spark;
 import spark.template.mustache.MustacheTemplateEngine;
 
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -17,25 +20,35 @@ public class Main {
 
     static HashMap<String, User> userHash = new HashMap<>();
 
+    public static void createTables(Connection conn) throws SQLException{
+        Statement stmt = conn.createStatement();
+        stmt.execute("CREATE TABLE IF NOT EXISTS users (id IDENTITY, name VARCHAR, password VARCHAR)");
+        stmt.execute("CREATE TABLE IF NOT EXISTS diveEntries( id IDENTITY, location VARCHAR, buddy VARCHAR, comments VARCHAR, maxdepth INT, duration INT, user_id INT)");
+    }
 
-    public static void main(String[] args) {
+    public static void insertUser(Connection conn, String name, String password) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO users VALUES (NULL,?,?)");
+        stmt.setString(1,name);
+        stmt.setString(2,password);
+        stmt.execute();
+    }
 
-        //adding some pre-seeded data for ease of testing
-        addTestUsers();
-        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","HUGE Sharks everywhere",80,15, 0));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Hawaii","Charlie","nothing noteworthy besides, well, everything...",200,5, 1));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 2));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Hawaii","Charlie","The font-family property should hold several font names as a \"fallback\" system. If the browser does not support the first font, it tries the next font, and so on.\n" +
-                "\n" +
-                "Start with the font you want, and end with a generic family, to let the browser pick a similar font in the generic family, if no other fonts are available..",30,5, 3));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 4));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,45,123, 5));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Hawaii","bob","TESTING PURPOSES. TESTING PURPOSES. TESTING PURPOSES. TESTING PURPOSES. TESTING PURPOSES. TESTING PURPOSES." ,45,123, 6));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Nebraska","bob","Lorem ipsum, Etc..." ,1,156, 7));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,5,53, 8));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","for the sake of page seperation and readability I'll make this one a little different" ,88,23, 9));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,74,93, 10));
-        userHash.get("Alice").diveLog.add(new DiveEntry("Bali","bob","Lorem ipsum, Etc..." ,32,13, 11));
+    public static User selectUser(Connection conn, String name) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM users WHERE name = ?");
+        stmt.setString(1,name);
+        ResultSet results = stmt.executeQuery();
+        if (results.next()){
+            int id = results.getInt("id");
+            String password = results.getString("password");
+            return  new User(id,name,password);
+        }
+        return null;
+    }
+
+    public static void main(String[] args) throws SQLException {
+        Server.createWebServer().start();
+        Connection conn = DriverManager.getConnection("jdbc:h2:./main");
+        createTables(conn);
 
         staticFileLocation("templates");
 
@@ -263,13 +276,7 @@ public class Main {
                     return "";
                 }
         );
-    }
+    } //End Main method
 
-    static void addTestUsers(){
-        userHash.put("Alice", new User("Alice", "a", new ArrayList<DiveEntry>()));
-        userHash.put("Bob", new User("Bob", "123"));
-        userHash.put("Charlie", new User("Charlie", "qwe"));
 
-    }
-
-}
+} //End Main Class

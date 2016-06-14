@@ -6,6 +6,7 @@ import java.util.ArrayList;
  * Created by johncrooks on 6/9/16.
  */
 public class User {
+    int id;
     String userName;
     String password;
     ArrayList<DiveEntry> diveLog = new ArrayList<>();
@@ -15,7 +16,14 @@ public class User {
         this.password = password;
     }
 
-    public User(String userName, String password, ArrayList<DiveEntry> diveLog) {
+    public User(int id, String userName, String password) {
+        this.id = id;
+        this.userName = userName;
+        this.password = password;
+    }
+
+    public User(int id, String userName, String password, ArrayList<DiveEntry> diveLog) {
+        this.id=id;
         this.userName = userName;
         this.password = password;
         this.diveLog = diveLog;
