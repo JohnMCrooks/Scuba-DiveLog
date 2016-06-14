@@ -97,16 +97,15 @@ public class Main {
         stmt.execute();
     }
 
-    public static void editEntry(Connection conn,String location, String buddy, String comments, int maxDepth, int duration, int id, int userID ) throws SQLException {
+    public static void editEntry(Connection conn,String location, String buddy, String comments, int maxDepth, int duration, int id ) throws SQLException {
 
-        PreparedStatement stmt = conn.prepareStatement("UPDATE diveEntries SET location = ?, buddy=?, comments=?, maxdepth=?,duration=?, user_id=? WHERE id=?");
+        PreparedStatement stmt = conn.prepareStatement("UPDATE diveEntries SET location = ?, buddy=?, comments=?, maxdepth=?,duration=? WHERE id=?");
         stmt.setString(1, location);
         stmt.setString(2, buddy);
         stmt.setString(3, comments);
         stmt.setInt(4,maxDepth);
         stmt.setInt(5, duration);
-        stmt.setInt(7, id);
-        stmt.setInt(6, userID);
+        stmt.setInt(6, id);
         stmt.execute();
     }
 
@@ -189,7 +188,6 @@ public class Main {
                         m.put("id", id);
                     }
                     return new ModelAndView(m, "editEntry.html");
-
                 }, new MustacheTemplateEngine()
         );
 
@@ -244,9 +242,6 @@ public class Main {
                 }
         );
 
-
-
-//TODO finish the post route below
         Spark.post(
                 "/editEntry",
                 (request, response) -> {
@@ -265,12 +260,10 @@ public class Main {
                     int duration = Integer.valueOf(request.queryParams("duration"));
                     int id = Integer.valueOf(request.queryParams("id"));
 
-                    editEntry(conn,location,buddy,comments,maxdepth,duration, id, user.id);
+                    editEntry(conn,location,buddy,comments,maxdepth,duration, id);
 
                     response.redirect("/");
                     return"";
-
-
                 }
         );
 
@@ -289,9 +282,7 @@ public class Main {
                     response.redirect("/");
                     return"";
                 }
-
         );
-
         Spark.post(
                 "/logout",
                 (request, response) -> {
