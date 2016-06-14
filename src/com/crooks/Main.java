@@ -45,6 +45,34 @@ public class Main {
         return null;
     }
 
+    public static void insertEntry(Connection conn, String location, String buddy, String comments, int maxDepth, int duration, int userID) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("INSERT INTO diveEntries VALUES (NULL,?,?,?,?,?,? )");
+        stmt.setString(1, location);
+        stmt.setString(2, buddy);
+        stmt.setString(3, comments);
+        stmt.setInt(4, maxDepth);
+        stmt.setInt(5, duration);
+        stmt.setInt(6, userID);
+        stmt.execute();
+
+
+    }
+
+    public static DiveEntry selectEntry(Connection conn, int id) throws SQLException {
+        PreparedStatement stmt = conn.prepareStatement("SELECT * FROM diveEntries INNER JOIN users ON diveEntries.user_id = users.id WHERE users.id=?");
+        stmt.setInt(1,id);
+        ResultSet results = stmt.executeQuery();
+        if(results.next()){
+            String location = results.getString("diveEntries.location");
+            String buddy = results.getString("diveEntries.buddy");
+            String comments = results.getString("diveEntries.comments");
+            int maxDepth = results.getInt("diveEntries.maxdepth");
+            int duration = results.getInt("diveEntries.duration");
+            return new DiveEntry(location,buddy,comments,maxDepth,duration,id);
+        }
+        return null;
+    }
+
     public static void main(String[] args) throws SQLException {
         Server.createWebServer().start();
         Connection conn = DriverManager.getConnection("jdbc:h2:./main");
