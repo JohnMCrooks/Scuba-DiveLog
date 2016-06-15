@@ -228,12 +228,31 @@ public class Main {
                         response.redirect("/");
                     }
 
-                    String location = request.queryParams("location");          //Grab variable details from the user
+                    String location = request.queryParams("location");          //Grab variable details from the user and Validate input.
+                    if(location.isEmpty() || location == null){
+                            location = "Unknown";
+                        }
                     String buddy = request.queryParams("buddy");
+                    if(buddy.isEmpty() || buddy == null){
+                        buddy = "N/A";
+                    }
                     String comments = request.queryParams("comments");
-                    int maxdepth = Integer.valueOf( request.queryParams("maxdepth"));
-                    int duration = Integer.valueOf(request.queryParams("duration"));
-                    int id = 0;
+                    if(comments.isEmpty() || comments == null){
+                        comments = "N/A";
+                    }
+
+                    String depth = request.queryParams("maxdepth");
+                    if (depth==null || depth.isEmpty()){
+                        depth = "0";
+                    }
+                    int maxdepth = Integer.valueOf(depth);
+
+
+                    String strDuration = request.queryParams("duration");
+                    if (strDuration==null || strDuration.isEmpty()){
+                        strDuration = "0";
+                    }
+                    int duration = Integer.valueOf(strDuration);
 
                     insertEntry(conn, location, buddy, comments,maxdepth, duration, user.id);
 
@@ -253,11 +272,31 @@ public class Main {
                         response.redirect("/");
                     }
 
-                    String location = request.queryParams("location");          //Grab variable details from the user
+                    String location = request.queryParams("location");          //Grab variable details from the user and Validate input.
+                    if(location.isEmpty() || location == null){
+                        location = "Unknown";
+                    }
                     String buddy = request.queryParams("buddy");
+                    if(buddy.isEmpty() || buddy == null){
+                        buddy = "N/A";
+                    }
                     String comments = request.queryParams("comments");
-                    int maxdepth = Integer.valueOf( request.queryParams("maxdepth"));
-                    int duration = Integer.valueOf(request.queryParams("duration"));
+                    if(comments.isEmpty() || comments == null){
+                        comments = "N/A";
+                    }
+
+                    String depth = request.queryParams("maxdepth");
+                    if (depth==null || depth.isEmpty()){
+                        depth = "0";
+                    }
+                    int maxdepth = Integer.valueOf(depth);
+
+
+                    String strDuration = request.queryParams("duration");
+                    if (strDuration==null || strDuration.isEmpty()){
+                        strDuration = "0";
+                    }
+                    int duration = Integer.valueOf(strDuration);
                     int id = Integer.valueOf(request.queryParams("id"));
 
                     editEntry(conn,location,buddy,comments,maxdepth,duration, id);
