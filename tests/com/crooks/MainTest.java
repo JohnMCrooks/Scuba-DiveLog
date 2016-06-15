@@ -88,7 +88,7 @@ public class MainTest {
         Main.insertUser(conn, "Alice", "");
         User alice = Main.selectUser(conn, "Alice");
         Main.insertEntry(conn,"fiji", "eddie","the sharks were yuuuuuge",50,41,1);
-        Main.editEntry(conn, "mars", "me", "blah", 99, 99,1,alice.id);
+        Main.editEntry(conn, "mars", "me", "blah", 99, 99,1);
         DiveEntry de = Main.selectEntry(conn,1);
 
         conn.close();
